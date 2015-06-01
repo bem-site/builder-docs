@@ -1,3 +1,4 @@
-require('../lib/tasks/docs-load-gh');
-require('../lib/tasks/docs-load-file');
-require('../lib/tasks/docs-md-html');
+require('./tasks/docs-gh-base.test.js');
+require('./tasks/docs-gh-load.test.js');
+require('./tasks/docs-load-file.test');
+require('./tasks/docs-md-html.test');

@@ -4,15 +4,9 @@ import _ from 'lodash';
 import vow from 'vow';
 import builderCore from 'bs-builder-core';
 import GitHub from '../github';
+import DocsBaseGithub from './docs-gh-base';
 
-export default class DocsLoadGithub extends builderCore.tasks.Base {
-
-    constructor(baseConfig, taskConfig) {
-        super(baseConfig, taskConfig);
-
-        var ghOptions = _.extend({ token: taskConfig.token }, baseConfig.getLoggerSettings());
-        this.api = new GitHub(ghOptions);
-    }
+export default class DocsLoadGithub extends DocsBaseGithub {
 
     static getLoggerName() {
         return module;
@@ -20,91 +14,6 @@ export default class DocsLoadGithub extends builderCore.tasks.Base {
 
     static getName() {
         return 'docs load from gh';
-    }
-
-    /**
-     * Returns url pattern for http urls of gh sources
-     * @returns {RegExp}
-     * @private
-     */
-    static getGhUrlPattern() {
-        // Например: https://github.com/bem/bem-method/tree/bem-info-data/method/index/index.en.md
-        return /^https?:\/\/(.+?)\/(.+?)\/(.+?)\/(tree|blob)\/(.+?)\/(.+)/;
-    }
-
-    /**
-     * Returns github API class instance
-     * @returns {Github}
-     * @private
-     */
-    _getAPI() {
-        return this.api;
-    }
-
-    /**
-     * Returns parsed repository info for language version of page. Otherwise returns false
-     * @param {Object} page - page model object
-     * @param {String} lang - language
-     * @returns {Object|false}
-     * @private
-     */
-    _getGhSource(page, lang) {
-        var sourceUrl,
-            repoInfo;
-
-        //1. page должен иметь поле {lang}
-        //2. page[lang] должен иметь поле 'sourceUrl'
-        //3. page[lang].sourceUrl должен матчится на регулярное выражение из _getGhUrlPattern()
-        //4. если хотя бы одно из условий не выполняется, то вернется false
-
-        if (!page[lang]) {
-            return false;
-        }
-
-        sourceUrl = page[lang].sourceUrl
-        if (!sourceUrl) {
-            return false;
-        }
-
-        repoInfo = sourceUrl.match(this.constructor.getGhUrlPattern());
-        if (!repoInfo) {
-            return false;
-        }
-
-        return {
-            host: repoInfo[1],
-            user: repoInfo[2],
-            repo: repoInfo[3],
-            ref:  repoInfo[5],
-            path: repoInfo[6]
-        };
-    }
-
-    /**
-     * Returns pages with anyone language version satisfy _hasMdFile function criteria
-     * @param {Array} pages - model pages
-     * @param {Array} languages - configured languages array
-     * @returns {Array} filtered array of pages
-     * @private
-     */
-    _getPagesWithGHSources(pages, languages) {
-        // здесь происходит поиск страниц в модели у которых
-        // хотя бы одна из языковых версий удовлетворяет критерию из функции _getGhSource
-        return pages.filter(page => {
-           return languages.some(lang => {
-                return this._getGhSource(page, lang);
-           });
-        });
-    }
-
-    /**
-     * Creates header object from cached etag
-     * @param {Object} cache object
-     * @returns {{If-None-Match: *}}
-     * @private
-     */
-    _getHeadersByCache(cache) {
-        return (cache && cache.etag) ? { 'If-None-Match': cache.etag } : null;
     }
 
     /**
@@ -116,7 +25,7 @@ export default class DocsLoadGithub extends builderCore.tasks.Base {
      */
     _getContentFromGh(repoInfo, headers){
         return new Promise((resolve, reject) => {
-            this._getAPI().getContent(repoInfo, headers, (error, result) => {
+            this.getAPI().getContent(repoInfo, headers, (error, result) => {
                 if (error) {
                     this.logger
                         .error('GH: %s', error.message)
@@ -141,9 +50,9 @@ export default class DocsLoadGithub extends builderCore.tasks.Base {
      * @returns {*|Promise.<T>}
      * @private
      */
-    _syncDoc(model, page, languages) {
+    processPage(model, page, languages) {
         return vow.allResolved(languages.map((language, index) => {
-            var repoInfo = this._getGhSource(page, language);
+            var repoInfo = this.getGhSource(page, language);
 
             // Проверяем на наличие правильного поля contentFile
             // это сделано потому, что предварительный фильтр мог сработать
@@ -163,7 +72,7 @@ export default class DocsLoadGithub extends builderCore.tasks.Base {
                 .then(cache => {
                     cache = cache || {};
                     // выполняется запрос на gh
-                    return this._getContentFromGh(repoInfo, this._getHeadersByCache(cache))
+                    return this._getContentFromGh(repoInfo, this.getHeadersByCache(cache))
                         .then((result) => {
 
                             // если запрос был послан с header содержащим meta etag
@@ -200,7 +109,7 @@ export default class DocsLoadGithub extends builderCore.tasks.Base {
 
                             // записываем файл мета-данных и файл с контентом в кеш
                             return vow.all([
-                                this.writeFileToCache(path.join(page.url, lang + '.json'), JSON.stringify(cache, null, 4)),
+                                this.writeFileToCache(path.join(page.url, language + '.json'), JSON.stringify(cache, null, 4)),
                                 this.writeFileToCache(filePath, content)
                             ]).then(() => {
                                 return filePath;
@@ -223,31 +132,7 @@ export default class DocsLoadGithub extends builderCore.tasks.Base {
      */
     run(model) {
         this.beforeRun(this.name);
-
-        var PORTION_SIZE = 5,
-            languages,
-            pagesWithGHSources,
-            portions,
-            loadDocs;
-
-        languages = this.getBaseConfig().getLanguages();
-        pagesWithGHSources = this._getPagesWithGHSources(model.getPages(), languages);
-        portions = _.chunk(pagesWithGHSources, PORTION_SIZE);
-
-        loadDocs = portions.reduce((prev, portion, index) => {
-            prev = prev.then(() => {
-                this.logger.debug('Synchronize portion of pages in range %s - %s',
-                    index * PORTION_SIZE, (index + 1) * PORTION_SIZE);
-                return vow.allResolved(portion.map((page) => {
-                    return this._syncDoc(model, page, languages);
-                }));
-            });
-            return prev;
-        }, vow.resolve());
-
-        return loadDocs.then(() => {
-            return Promise.resolve(model);
-        });
+        return super.run(model);
     }
 }
 
