@@ -41,7 +41,7 @@ describe('DocsBaseGh', function () {
                 var page = {
                     url: '/url1'
                 };
-                task.getGhSource(page, 'en').should.equal(false);
+                task.getCriteria(page, 'en').should.equal(false);
             });
 
             it('should return false for missed sourceUrl field', function () {
@@ -49,7 +49,7 @@ describe('DocsBaseGh', function () {
                     url: '/url1',
                     en: {}
                 };
-                task.getGhSource(page, 'en').should.equal(false);
+                task.getCriteria(page, 'en').should.equal(false);
             });
 
             it('should return false if sourceUrl field does not match criteria', function () {
@@ -59,7 +59,7 @@ describe('DocsBaseGh', function () {
                         sourceUrl: '/foo/bar'
                     }
                 };
-                task.getGhSource(page, 'en').should.equal(false);
+                task.getCriteria(page, 'en').should.equal(false);
             });
 
             it('should return valid repository info object', function () {
@@ -69,7 +69,7 @@ describe('DocsBaseGh', function () {
                         sourceUrl: 'https://github.com/bem/bem-method/tree/bem-info-data/method/index/index.en.md'
                     }
                 };
-                should.deepEqual(task.getGhSource(page, 'en'), {
+                should.deepEqual(task.getCriteria(page, 'en'), {
                     host: 'github.com',
                     user: 'bem',
                     repo: 'bem-method',
@@ -99,7 +99,7 @@ describe('DocsBaseGh', function () {
                             ru: {}
                         }
                     ],
-                    result = task.getPagesWithGHSources(pages, ['en', 'ru']);
+                    result = task.getPagesByCriteria(pages, ['en', 'ru']);
 
                 result.should.be.instanceOf(Array).and.have.length(2);
                 should.deepEqual(result, [pages[2], pages[3]]);
@@ -116,10 +116,6 @@ describe('DocsBaseGh', function () {
                 should(task.getHeadersByCache({})).equal(null);
                 should(task.getHeadersByCache()).equal(null);
             });
-        });
-
-        describe('run', function () {
-
         });
     });
 });

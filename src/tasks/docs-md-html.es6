@@ -3,8 +3,9 @@ import _ from 'lodash';
 import vow from 'vow';
 import builderCore from 'bs-builder-core';
 import mdToHtml from 'bem-md-renderer';
+import DocsBase from './docs-base'
 
-export default class DocsMdToHtml extends builderCore.tasks.Base {
+export default class DocsMdToHtml extends DocsBase {
 
     static getLoggerName() {
         return module;
@@ -12,6 +13,10 @@ export default class DocsMdToHtml extends builderCore.tasks.Base {
 
     static getName() {
         return 'docs markdown to html';
+    }
+
+    static getPortionSize() {
+        return 20;
     }
 
     /**
@@ -22,7 +27,7 @@ export default class DocsMdToHtml extends builderCore.tasks.Base {
      * @returns {Boolean}
      * @private
      */
-    _hasMdFile(page, language) {
+    getCriteria(page, language) {
         var contentFile;
 
         // проверяем существование языковой версии страницы
@@ -34,23 +39,6 @@ export default class DocsMdToHtml extends builderCore.tasks.Base {
         // этого поля должен быть относительный путь оканчивающийся на .md
         contentFile = page[language].contentFile
         return contentFile && contentFile.match(/\.md$/);
-    }
-
-    /**
-     * Returns pages with anyone language version satisfy _hasMdFile function criteria
-     * @param {Array} pages - model pages
-     * @param {Array} languages - configured languages array
-     * @returns {Array} filtered array of pages
-     * @private
-     */
-    _getPagesWithMdFiles(pages, languages) {
-        // здесь происходит поиск страниц в модели у которых
-        // хотя бы одна из языковых версий удовлетворяет критерию из функции _hasMdFile
-        return pages.filter(page => {
-            return languages.some(lang => {
-                return this._hasMdFile(page, lang);
-            });
-        });
     }
 
     /**
@@ -80,12 +68,13 @@ export default class DocsMdToHtml extends builderCore.tasks.Base {
 
     /**
      * Transform md content of page source file into html syntax
+     * @param {Model} model - data model
      * @param {Object} page - page object
      * @param {Array} languages - configured languages array
      * @returns {Promise}
      * @private
      */
-    _transformDoc(page, languages) {
+    processPage(model, page, languages) {
         return vow.allResolved(languages.map((language) => {
             var hasMdFile = this._hasMdFile(page, language),
                 mdFilePath,
@@ -128,35 +117,6 @@ export default class DocsMdToHtml extends builderCore.tasks.Base {
                     return page;
                 });
         }));
-    }
-
-    /**
-     * Performs task
-     * @returns {Promise}
-     */
-    run(model) {
-        this.beforeRun(this.name);
-
-        // обрабатываем страницы порциями по 20 штук (для предотвращения open files limit exceed)
-        // для каждой порции создаем выполнение задач обработки для каждой из отобранных по условию страниц
-        var PORTION_SIZE = 20,
-            languages = this.getBaseConfig().getLanguages(),
-            pagesWithMarkdownFiles = this._getPagesWithMdFiles(model.getPages(), languages),
-            portions = _.chunk(pagesWithMarkdownFiles, PORTION_SIZE),
-            transformDocs = portions.reduce((prev, portion, index) => {
-                prev = prev.then(() => {
-                    this.logger.debug('Transform portion of pages in range %s - %s',
-                        index * PORTION_SIZE, (index + 1) * PORTION_SIZE);
-                    return vow.allResolved(portion.map((page) => {
-                        return this._transformDoc(page, languages);
-                    }));
-                });
-                return prev;
-            }, vow.resolve());
-
-        return transformDocs.then(() => {
-            return Promise.resolve(model);
-        });
     }
 }
 

@@ -4,8 +4,9 @@ import _ from 'lodash';
 import vow from 'vow';
 import builderCore from 'bs-builder-core';
 import GitHub from '../github';
+import DocsBase from './docs-base'
 
-export default class DocsBaseGithub extends builderCore.tasks.Base {
+export default class DocsBaseGithub extends DocsBase {
 
     constructor(baseConfig, taskConfig) {
         super(baseConfig, taskConfig);
@@ -48,7 +49,7 @@ export default class DocsBaseGithub extends builderCore.tasks.Base {
      * @returns {Object|false}
      * @private
      */
-    getGhSource(page, lang) {
+    getCriteria(page, lang) {
         var sourceUrl,
             repoInfo;
 
@@ -81,23 +82,6 @@ export default class DocsBaseGithub extends builderCore.tasks.Base {
     }
 
     /**
-     * Returns pages with anyone language version satisfy _hasMdFile function criteria
-     * @param {Array} pages - model pages
-     * @param {Array} languages - configured languages array
-     * @returns {Array} filtered array of pages
-     * @private
-     */
-    getPagesWithGHSources(pages, languages) {
-        // здесь происходит поиск страниц в модели у которых
-        // хотя бы одна из языковых версий удовлетворяет критерию из функции _getGhSource
-        return pages.filter(page => {
-            return languages.some(lang => {
-                return this.getGhSource(page, lang);
-            });
-        });
-    }
-
-    /**
      * Creates header object from cached etag
      * @param {Object} cache object
      * @returns {{If-None-Match: *}}
@@ -120,53 +104,6 @@ export default class DocsBaseGithub extends builderCore.tasks.Base {
             fs.readFile(path.join(basePath, filePath), o, (error, content) => {
                 resolve(content || "{}");
             });
-        });
-    }
-
-    /**
-     * Process single page for all page language version
-     * @param {Model} model - data model
-     * @param {Object} page - page model object
-     * @param {Array} languages - array of languages
-     * @returns {*|Promise.<T>}
-     * @private
-     */
-    processPage(model, page, languages) {
-        return Promise.resolve(page);
-    }
-
-    /**
-     * Performs task
-     * @returns {Promise}
-     */
-    run(model) {
-        this.beforeRun(this.name);
-
-        var PORTION_SIZE = 5,
-            languages = this.getBaseConfig().getLanguages(), //массив языков
-
-            // фильтруем страницы c гихабовыми ссылками на ресурсы
-            pagesWithGHSources = this._getPagesWithGHSources(model.getPages(), languages),
-
-            //делим полученный массив на порции. Это необходимо для того, чтобы не
-            //посылать кучу запросов за 1 раз, что ведет к ошибкам соединения
-            portions = _.chunk(pagesWithGHSources, PORTION_SIZE),
-
-            //для каждой порции выполняем _syncDoc для всех страниц в порции
-            //после синхронизации переходим к следующей порции
-            processPages = portions.reduce((prev, portion, index) => {
-                prev = prev.then(() => {
-                    this.logger.debug('Synchronize portion of pages in range %s - %s',
-                        index * PORTION_SIZE, (index + 1) * PORTION_SIZE);
-                    return vow.allResolved(portion.map((page) => {
-                        return this.processPage(model, page, languages);
-                    }));
-                });
-                return prev;
-            }, vow.resolve());
-
-        return processPages.then(() => {
-            return Promise.resolve(model);
         });
     }
 }

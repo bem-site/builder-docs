@@ -146,10 +146,6 @@ describe('DocsLoadGh', function () {
                 });
             });
         });
-
-        describe('run', function () {
-
-        });
     });
 });
 

@@ -3,7 +3,6 @@ import path from 'path';
 import _ from 'lodash';
 import vow from 'vow';
 import builderCore from 'bs-builder-core';
-import GitHub from '../github';
 import DocsBaseGithub from './docs-gh-base';
 
 export default class DocsLoadGithub extends DocsBaseGithub {
@@ -52,7 +51,7 @@ export default class DocsLoadGithub extends DocsBaseGithub {
      */
     processPage(model, page, languages) {
         return vow.allResolved(languages.map((language, index) => {
-            var repoInfo = this.getGhSource(page, language);
+            var repoInfo = this.getCriteria(page, language);
 
             // Проверяем на наличие правильного поля contentFile
             // это сделано потому, что предварительный фильтр мог сработать
@@ -124,15 +123,6 @@ export default class DocsLoadGithub extends DocsBaseGithub {
         })).then(() => {
             return page;
         });
-    }
-
-    /**
-     * Performs task
-     * @returns {Promise}
-     */
-    run(model) {
-        this.beforeRun(this.name);
-        return super.run(model);
     }
 }
 
