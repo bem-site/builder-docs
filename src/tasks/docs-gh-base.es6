@@ -19,6 +19,10 @@ export default class DocsBaseGithub extends DocsBase {
         return module;
     }
 
+    /**
+     * Return task human readable description
+     * @returns {string}
+     */
     static getName() {
         return 'docs base github operations';
     }

@@ -11,10 +11,18 @@ export default class DocsBase extends builderCore.tasks.Base {
         return module;
     }
 
+    /**
+     * Return task human readable description
+     * @returns {string}
+     */
     static getName() {
         return 'docs base operations';
     }
 
+    /**
+     * Returns number of page per portion for processing
+     * @returns {number}
+     */
     static getPortionSize() {
         return 5;
     }
@@ -90,8 +98,9 @@ export default class DocsBase extends builderCore.tasks.Base {
      * @returns {Promise}
      */
     run(model) {
-        this.beforeRun(this.name);
+        this.beforeRun();
 
+        //обрабатываем страницы в модели
         return processPages(model).then(() => {
             return Promise.resolve(model);
         });

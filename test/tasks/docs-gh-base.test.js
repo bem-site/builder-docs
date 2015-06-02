@@ -36,7 +36,7 @@ describe('DocsBaseGh', function () {
             task.getAPI().should.be.instanceOf(Github);
         });
 
-        describe('_getGhSource', function () {
+        describe('getCriteria', function () {
             it('should return false for missed lang version of page', function () {
                 var page = {
                     url: '/url1'
@@ -79,7 +79,7 @@ describe('DocsBaseGh', function () {
             });
         });
 
-        describe('_getPagesWithGHSources', function () {
+        describe('getPagesByCriteria', function () {
             it('should return valid set of filtered pages', function () {
                 var pages = [
                         { url: '/url1' },
@@ -106,7 +106,7 @@ describe('DocsBaseGh', function () {
             });
         });
 
-        describe('_getHeadersByCache', function () {
+        describe('getHeadersByCache', function () {
             it('should return header object', function () {
                 should.deepEqual(task.getHeadersByCache({ etag: '123456789abcdef' }),
                     { 'If-None-Match': '123456789abcdef' });

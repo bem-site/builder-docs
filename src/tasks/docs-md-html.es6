@@ -11,10 +11,18 @@ export default class DocsMdToHtml extends DocsBase {
         return module;
     }
 
+    /**
+     * Return task human readable description
+     * @returns {string}
+     */
     static getName() {
         return 'docs markdown to html';
     }
 
+    /**
+     * Returns number of page per portion for processing
+     * @returns {number}
+     */
     static getPortionSize() {
         return 20;
     }

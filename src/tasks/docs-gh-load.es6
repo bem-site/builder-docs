@@ -11,6 +11,10 @@ export default class DocsLoadGithub extends DocsBaseGithub {
         return module;
     }
 
+    /**
+     * Return task human readable description
+     * @returns {string}
+     */
     static getName() {
         return 'docs load from gh';
     }
