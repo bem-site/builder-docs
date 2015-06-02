@@ -3,7 +3,7 @@ import _ from 'lodash';
 import vow from 'vow';
 import builderCore from 'bs-builder-core';
 import mdToHtml from 'bem-md-renderer';
-import DocsBase from './docs-base'
+import DocsBase from './docs-base';
 
 export default class DocsMdToHtml extends DocsBase {
 
@@ -46,7 +46,7 @@ export default class DocsMdToHtml extends DocsBase {
         // проверяем поле contentFile. Оно должно существовать и значением
         // этого поля должен быть относительный путь оканчивающийся на .md
         contentFile = page[language].contentFile
-        return contentFile && contentFile.match(/\.md$/);
+        return !!contentFile && !!contentFile.match(/\.md$/);
     }
 
     /**
@@ -127,4 +127,3 @@ export default class DocsMdToHtml extends DocsBase {
         }));
     }
 }
-
