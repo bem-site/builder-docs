@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import _ from 'lodash';
 import vow from 'vow';
-import builderCore from 'bs-builder-core';
 import DocsBaseGithub from './docs-gh-base';
 
 export default class DocsLoadGithub extends DocsBaseGithub {

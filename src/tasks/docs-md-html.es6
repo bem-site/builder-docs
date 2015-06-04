@@ -1,7 +1,6 @@
 import path from 'path';
 import _ from 'lodash';
 import vow from 'vow';
-import builderCore from 'bs-builder-core';
 import mdToHtml from 'bem-md-renderer';
 import DocsBase from './docs-base';
 
@@ -84,7 +83,7 @@ export default class DocsMdToHtml extends DocsBase {
      */
     processPage(model, page, languages) {
         return vow.allResolved(languages.map((language) => {
-            var hasMdFile = this._hasMdFile(page, language),
+            var hasMdFile = this.getCriteria(page, language),
                 mdFilePath,
                 mdFileDirectory,
                 htmlFilePath;
@@ -93,7 +92,7 @@ export default class DocsMdToHtml extends DocsBase {
             // это сделано потому, что предварительный фильтр мог сработать
             // для страниц у которых только часть из языковых версий удовлетворяла критерию
             if (!hasMdFile) {
-                return vow.resolve(page);
+                return Promise.resolve(page);
             }
 
             this.logger.debug(`md -> html for language: => ${language} and page with url: => ${page.url}`);
