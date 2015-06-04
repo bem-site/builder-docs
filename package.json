@@ -46,7 +46,9 @@
   "scripts": {
     "compile": "babel src --optional runtime --out-dir lib",
     "codestyle": "node_modules/.bin/jshint . && node_modules/.bin/jscs -c .jscs.js .",
-    "test": "npm run compile && NODE_ENV=testing ./node_modules/.bin/istanbul cover _mocha"
+    "pretest": "npm run compile",
+    "prepublish": "npm run compile",
+    "test": "NODE_ENV=testing ./node_modules/.bin/istanbul cover _mocha"
   },
   "readmeFilename": "README.md",
   "license": "MPL-2.0"
