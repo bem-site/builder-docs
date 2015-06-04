@@ -123,6 +123,8 @@ export default class DocsMdToHtml extends DocsBase {
                     page[language].contentFile = htmlFilePath;
                     return page;
                 });
-        }));
+        })).then(() => {
+            return page;
+        });
     }
 }

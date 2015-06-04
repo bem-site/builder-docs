@@ -20,9 +20,22 @@ describe('DocsMdHtml', function () {
         var config,
             task;
 
-        before(function () {
+        beforeEach(function () {
             config = new Config('debug');
             task = new DocsMdHtml(config, {});
+            mockFs({
+                '.builder': {
+                    cache: {
+                        url1: {
+                            'en.md': 'Hello World'
+                        }
+                    }
+                }
+            });
+        });
+
+        afterEach(function () {
+            mockFs.restore();
         });
 
         describe('getCriteria', function () {
@@ -72,6 +85,38 @@ describe('DocsMdHtml', function () {
             it('should return  rejected promise on missed markdown source', function (done) {
                 task._mdToHtml(page, language, null).catch(function (error) {
                     error.message.should.equal('Markdown string should be passed in arguments');
+                    done();
+                });
+            });
+        });
+
+        describe('processPage', function() {
+            var languages = ['en'];
+
+            it('for non-md content file', function (done) {
+                var page = {
+                        url: '/url1',
+                        en: { contentFile: '/url1/en.json' }
+                    },
+                    model = new Model();
+
+                task.processPage(model, page, languages).then(function(page) {
+                    page['en'].contentFile.should.equal('/url1/en.json');
+                    fs.existsSync('./.builder/cache/url1/en.html', { encoding: 'utf-8' }).should.equal(false);
+                    done();
+                });
+            });
+
+            it('should successfully transform *.md to *.html file via marked', function (done) {
+                var page = {
+                        url: '/url1',
+                        en: { contentFile: '/url1/en.md' }
+                    },
+                    model = new Model();
+
+                task.processPage(model, page, languages).then(function(page) {
+                    page['en'].contentFile.should.equal('/url1/en.html');
+                    fs.existsSync('./.builder/cache/url1/en.html', { encoding: 'utf-8' }).should.equal(true);
                     done();
                 });
             });
