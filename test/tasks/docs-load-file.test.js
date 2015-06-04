@@ -100,6 +100,21 @@ describe('DocsLoadFile', function () {
         describe('processPage', function () {
             var languages = ['en'];
 
+            it('for non-matched local file path', function (done) {
+                var page = {
+                        url: '/url1',
+                        en: { sourceUrl: 'https://github.com/foo/bar.md' }
+                    },
+                    model = new Model();
+
+                task.processPage(model, page, languages).then(function(page) {
+                    model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(0);
+                    model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(0);
+                    should(page['en']['contentFile']).equal(undefined);
+                    done();
+                });
+            });
+
             it('for missed local file', function (done) {
                 var page = {
                         url: '/url1',
