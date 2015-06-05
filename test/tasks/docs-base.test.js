@@ -6,8 +6,7 @@ var fs = require('fs'),
     DocsBase = require('../../lib/tasks/docs-base');
 
 describe('DocsBase', function () {
-
-    it('should return valid task name', function() {
+    it('should return valid task name', function () {
         DocsBase.getName().should.equal('docs base operations');
     });
 
@@ -37,7 +36,7 @@ describe('DocsBase', function () {
             });
         });
 
-        describe('processPage', function(done) {
+        describe('processPage', function (done) {
             it('should return resolved promise with page', function (done) {
                 var model = new Model(),
                     page = { url: '/url1' };
@@ -53,11 +52,11 @@ describe('DocsBase', function () {
                 var model = new Model(),
                     pages = [];
 
-                for(var i = 0; i < 100; i++) {
+                for (var i = 0; i < 100; i++) {
                     pages.push({
-                        url: '/url' + i + '/url'  + (i*10),
-                        en: { field: i%2 },
-                        ru: { field: i%2 }
+                        url: '/url' + i + '/url'  + (i * 10),
+                        en: { field: i % 2 },
+                        ru: { field: i % 2 }
                     });
                 }
 
@@ -66,7 +65,7 @@ describe('DocsBase', function () {
                     return page[language].field % 2 == 0;
                 };
 
-                task.processPage = function(model, page) {
+                task.processPage = function (model, page) {
                     page.processed = true;
                     return vow.resolve(page);
                 };
@@ -80,6 +79,3 @@ describe('DocsBase', function () {
         });
     });
 });
-
-
-

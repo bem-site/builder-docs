@@ -1,5 +1,4 @@
-var os = require('os'),
-    fs = require('fs'),
+var fs = require('fs'),
     mockFs = require('mock-fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
@@ -7,8 +6,7 @@ var os = require('os'),
     DocsLoadFile = require('../../lib/tasks/docs-load-file');
 
 describe('DocsLoadFile', function () {
-
-    it('should return valid task name', function() {
+    it('should return valid task name', function () {
         DocsLoadFile.getName().should.equal('docs load from file');
     });
 
@@ -43,12 +41,12 @@ describe('DocsLoadFile', function () {
 
         describe('getCriteria', function () {
             it('should return false on missed language version of page', function () {
-                var page = {url: '/url1'};
+                var page = { url: '/url1' };
                 task.getCriteria(page, 'en').should.equal(false);
             });
 
             it('should return false on missed contentFile field for lang version of page', function () {
-                var page = {url: '/url1', en: {}};
+                var page = { url: '/url1', en: {} };
                 task.getCriteria(page, 'en').should.equal(false);
             });
 
@@ -77,7 +75,7 @@ describe('DocsLoadFile', function () {
 
         describe('_readFile', function () {
             it('should return rejected promise on read file error', function (done) {
-                var page = { url: '/url1'},
+                var page = { url: '/url1' },
                     language = 'en';
 
                 task._readFile(page, language, './foo/bar/invalid').catch(function (error) {
@@ -87,7 +85,7 @@ describe('DocsLoadFile', function () {
             });
 
             it('should return resolved promise on success file read', function (done) {
-                var page = { url: '/url1'},
+                var page = { url: '/url1' },
                     language = 'en';
 
                 task._readFile(page, language, './foo/bar/test-file.md').then(function (result) {
@@ -107,7 +105,7 @@ describe('DocsLoadFile', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
                     model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(0);
                     model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(0);
                     should(page['en']['contentFile']).equal(undefined);
@@ -122,7 +120,7 @@ describe('DocsLoadFile', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
                     model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(0);
                     model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(0);
                     should(page['en']['contentFile']).equal(undefined);
@@ -137,7 +135,7 @@ describe('DocsLoadFile', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
                     model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(1);
                     model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(0);
                     should(page['en']['contentFile']).equal('/url1/en.md');
@@ -153,14 +151,15 @@ describe('DocsLoadFile', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
                     fs.writeFileSync('./foo/bar/test-file.md', 'Hello World 2', { encoding: 'utf-8' });
-                    return task.processPage(model, page, languages).then(function(page) {
+                    return task.processPage(model, page, languages).then(function (page) {
                         model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(1);
                         model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(1);
                         should(page['en']['contentFile']).equal('/url1/en.md');
                         fs.existsSync('./.builder/cache/url1/en.md').should.equal(true);
-                        fs.readFileSync('./.builder/cache/url1/en.md', { encoding: 'utf-8' }).should.be.equal('Hello World 2');
+                        fs.readFileSync('./.builder/cache/url1/en.md', { encoding: 'utf-8' })
+                            .should.be.equal('Hello World 2');
                         done();
                     });
                 });
@@ -173,13 +172,14 @@ describe('DocsLoadFile', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
-                    return task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
+                    return task.processPage(model, page, languages).then(function (page) {
                         model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(1);
                         model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(0);
                         should(page['en']['contentFile']).equal('/url1/en.md');
                         fs.existsSync('./.builder/cache/url1/en.md').should.equal(true);
-                        fs.readFileSync('./.builder/cache/url1/en.md', { encoding: 'utf-8' }).should.be.equal('Hello World');
+                        fs.readFileSync('./.builder/cache/url1/en.md', { encoding: 'utf-8' })
+                            .should.be.equal('Hello World');
                         done();
                     });
                 });

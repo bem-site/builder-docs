@@ -1,5 +1,4 @@
-var os = require('os'),
-    fs = require('fs'),
+var fs = require('fs'),
     mockFs = require('mock-fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
@@ -8,8 +7,7 @@ var os = require('os'),
     DocsLoadGh = require('../../lib/tasks/docs-gh-load');
 
 describe('DocsLoadGh', function () {
-
-    it('should return valid task name', function() {
+    it('should return valid task name', function () {
        DocsLoadGh.getName().should.equal('docs load from gh');
     });
 
@@ -29,7 +27,7 @@ describe('DocsLoadGh', function () {
             ].join('')
 
             config = new Config('debug');
-            task = new DocsLoadGh(config, { token : token });
+            task = new DocsLoadGh(config, { token: token });
         });
 
         describe('_getContentFromGh', function () {
@@ -42,9 +40,6 @@ describe('DocsLoadGh', function () {
                     path: 'method/index/index.en.md'
                 }, null).then(function (result) {
                     result.should.be.instanceOf(Object);
-                    //result.should.have('meta');
-                    //result.should.have('sha');
-                    //result.should.have('content');
                     done();
                 });
             });
@@ -78,7 +73,7 @@ describe('DocsLoadGh', function () {
             before(function () {
                 mockFs({
                     '.builder': {
-                        'cache': {
+                        cache: {
                             url1: {}
                         }
                     }
@@ -116,7 +111,7 @@ describe('DocsLoadGh', function () {
 
             it('should load cached file if etag was changed but sha sum are equal', function (done) {
                 var p = './.builder/cache/url1/en.json',
-                    o = { encoding: 'utf-8'},
+                    o = { encoding: 'utf-8' },
                     cache = fs.readFileSync(p, o);
                 cache = JSON.parse(cache);
                 cache.etag = cache.etag + 'a';
@@ -131,7 +126,7 @@ describe('DocsLoadGh', function () {
 
             it('should reload file if sha sum was changed', function (done) {
                 var p = './.builder/cache/url1/en.json',
-                    o = { encoding: 'utf-8'},
+                    o = { encoding: 'utf-8' },
                     cache = fs.readFileSync(p, o);
                 cache = JSON.parse(cache);
                 cache.sha = cache.sha + 'a';

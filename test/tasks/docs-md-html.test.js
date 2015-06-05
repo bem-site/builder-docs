@@ -1,14 +1,11 @@
-var os = require('os'),
-    fs = require('fs'),
+var fs = require('fs'),
     mockFs = require('mock-fs'),
-    should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
     DocsMdHtml = require('../../lib/tasks/docs-md-html');
 
 describe('DocsMdHtml', function () {
-
-    it('should return valid task name', function() {
+    it('should return valid task name', function () {
         DocsMdHtml.getName().should.equal('docs markdown to html');
     });
 
@@ -71,7 +68,7 @@ describe('DocsMdHtml', function () {
         });
 
         describe('_mdToHtml', function () {
-            var page = { url: '/url1'},
+            var page = { url: '/url1' },
                 language = 'en';
 
             it('should successfully parse markdown to html', function (done) {
@@ -90,7 +87,7 @@ describe('DocsMdHtml', function () {
             });
         });
 
-        describe('processPage', function() {
+        describe('processPage', function () {
             var languages = ['en'];
 
             it('for non-md content file', function (done) {
@@ -100,7 +97,7 @@ describe('DocsMdHtml', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
                     page['en'].contentFile.should.equal('/url1/en.json');
                     fs.existsSync('./.builder/cache/url1/en.html', { encoding: 'utf-8' }).should.equal(false);
                     done();
@@ -114,7 +111,7 @@ describe('DocsMdHtml', function () {
                     },
                     model = new Model();
 
-                task.processPage(model, page, languages).then(function(page) {
+                task.processPage(model, page, languages).then(function (page) {
                     page['en'].contentFile.should.equal('/url1/en.html');
                     fs.existsSync('./.builder/cache/url1/en.html', { encoding: 'utf-8' }).should.equal(true);
                     done();
@@ -123,5 +120,3 @@ describe('DocsMdHtml', function () {
         });
     });
 });
-
-

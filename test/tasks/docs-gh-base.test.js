@@ -1,6 +1,4 @@
-var os = require('os'),
-    fs = require('fs'),
-    mockFs = require('mock-fs'),
+var fs = require('fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
@@ -8,8 +6,7 @@ var os = require('os'),
     DocsBaseGh = require('../../lib/tasks/docs-gh-base');
 
 describe('DocsBaseGh', function () {
-
-    it('should return valid task name', function() {
+    it('should return valid task name', function () {
         DocsBaseGh.getName().should.equal('docs base github operations');
     });
 
@@ -29,7 +26,7 @@ describe('DocsBaseGh', function () {
             ].join('')
 
             config = new Config('debug');
-            task = new DocsBaseGh(config, { token : token });
+            task = new DocsBaseGh(config, { token: token });
         });
 
         it('_getAPI', function () {
@@ -87,14 +84,16 @@ describe('DocsBaseGh', function () {
                         {
                             url: '/url3',
                             ru: {
-                                sourceUrl: 'https://github.com/bem/bem-method/tree/bem-info-data/method/index/index.en.md'
+                                sourceUrl: 'https://github.com/bem/bem-method/' +
+                                'tree/bem-info-data/method/index/index.en.md'
                             },
                             en: { sourceUrl: '/foo/bar' }
                         },
                         {
                             url: '/url4',
                             en: {
-                                sourceUrl: 'https://github.com/bem/bem-method/tree/bem-info-data/method/index/index.en.md'
+                                sourceUrl: 'https://github.com/bem/bem-method/' +
+                                'tree/bem-info-data/method/index/index.en.md'
                             },
                             ru: {}
                         }
@@ -119,5 +118,3 @@ describe('DocsBaseGh', function () {
         });
     });
 });
-
-
