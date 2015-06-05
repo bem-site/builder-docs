@@ -3,7 +3,7 @@ import path from 'path';
 import _ from 'lodash';
 import vow from 'vow';
 import GitHub from '../github';
-import DocsBase from './docs-base'
+import DocsBase from './docs-base';
 
 export default class DocsBaseGithub extends DocsBase {
 
