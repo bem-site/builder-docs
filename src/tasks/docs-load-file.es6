@@ -44,7 +44,7 @@ export default class DocsLoadFile extends DocsBase {
 
         // проверяем поле sourceUrl. Оно должно существовать и значением
         // этого поля должен быть относительный путь на UNIX файловой системе
-        sourceUrl = page[language].sourceUrl
+        sourceUrl = page[language].sourceUrl;
         return !!sourceUrl && !!sourceUrl.match(/^(\/)?([^\/\0]+(\/)?)+$/);
     }
 
@@ -135,7 +135,7 @@ export default class DocsLoadFile extends DocsBase {
                 }
             }).then(() => {
                 // добавляем соответствующее поле в модель
-                page[language]['contentFile'] = cacheFilePath;
+                page[language].contentFile = cacheFilePath;
                 return cacheFilePath;
             });
         })).then(() => {

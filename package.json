@@ -35,6 +35,8 @@
   },
   "devDependencies": {
     "babel": "^5.2.x",
+    "babel-eslint": "^1.0.13",
+    "eslint": "^0.16.0",
     "istanbul": "^0.3.x",
     "jscs": "^1.11.x",
     "jshint": "~2.7.x",
@@ -44,9 +46,12 @@
     "should": "~6.x"
   },
   "scripts": {
+    "jshint": "node_modules/.bin/jshint .",
+    "eslint": "eslint src/**/*.es6",
+    "jscs": "node_modules/.bin/jscs -c .jscs.js .",
+    "codestyle": "npm run jshint && npm run eslint && npm run jscs",
     "compile": "babel src --optional runtime --out-dir lib",
-    "codestyle": "node_modules/.bin/jshint . && node_modules/.bin/jscs -c .jscs.js .",
-    "pretest": "npm run compile",
+    "pretest": "npm run codestyle && npm run compile",
     "prepublish": "npm run compile",
     "test": "NODE_ENV=testing ./node_modules/.bin/istanbul cover _mocha"
   },

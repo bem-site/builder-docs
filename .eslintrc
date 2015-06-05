@@ -1,0 +1,10 @@
+{
+  "parser": "babel-eslint",
+  "rules": {
+    "strict": 0,
+    "quotes": "single",
+    "no-unused-vars": true,
+    "no-underscore-dangle": true,
+    "no-undef": true
+  }
+}

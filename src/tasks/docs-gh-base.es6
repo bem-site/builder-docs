@@ -65,7 +65,7 @@ export default class DocsBaseGithub extends DocsBase {
             return false;
         }
 
-        sourceUrl = page[lang].sourceUrl
+        sourceUrl = page[lang].sourceUrl;
         if (!sourceUrl) {
             return false;
         }
@@ -79,7 +79,7 @@ export default class DocsBaseGithub extends DocsBase {
             host: repoInfo[1],
             user: repoInfo[2],
             repo: repoInfo[3],
-            ref:  repoInfo[5],
+            ref: repoInfo[5],
             path: repoInfo[6]
         };
     }

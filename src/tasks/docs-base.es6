@@ -1,9 +1,6 @@
-import fs from 'fs';
-import path from 'path';
 import _ from 'lodash';
 import vow from 'vow';
 import builderCore from 'bs-builder-core';
-import GitHub from '../github';
 
 export default class DocsBase extends builderCore.tasks.Base {
 
@@ -101,7 +98,7 @@ export default class DocsBase extends builderCore.tasks.Base {
         this.beforeRun();
 
         //обрабатываем страницы в модели
-        return processPages(model).then(() => {
+        return this.processPages(model).then(() => {
             return Promise.resolve(model);
         });
     }

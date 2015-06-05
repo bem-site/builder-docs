@@ -119,7 +119,7 @@ export default class DocsLoadGithub extends DocsBaseGithub {
                         })
                         .then((filePath) => {
                             // добавляем соответствующее поле в модель
-                            page[language]['contentFile'] = filePath;
+                            page[language].contentFile = filePath;
                             return filePath;
                         });
                 });

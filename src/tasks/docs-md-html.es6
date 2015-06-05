@@ -44,7 +44,7 @@ export default class DocsMdToHtml extends DocsBase {
 
         // проверяем поле contentFile. Оно должно существовать и значением
         // этого поля должен быть относительный путь оканчивающийся на .md
-        contentFile = page[language].contentFile
+        contentFile = page[language].contentFile;
         return !!contentFile && !!contentFile.match(/\.md$/);
     }
 
@@ -70,7 +70,7 @@ export default class DocsMdToHtml extends DocsBase {
                     resolve(html);
                 }
             });
-        })
+        });
     }
 
     /**
