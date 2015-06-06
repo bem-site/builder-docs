@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import _ from 'lodash';
 import vow from 'vow';
 import DocsBase from './docs-base';
 

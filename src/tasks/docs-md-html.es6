@@ -1,5 +1,4 @@
 import path from 'path';
-import _ from 'lodash';
 import vow from 'vow';
 import mdToHtml from 'bem-md-renderer';
 import DocsBase from './docs-base';

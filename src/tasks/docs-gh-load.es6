@@ -1,6 +1,4 @@
-import fs from 'fs';
 import path from 'path';
-import _ from 'lodash';
 import vow from 'vow';
 import DocsBaseGithub from './docs-gh-base';
 
@@ -53,7 +51,7 @@ export default class DocsLoadGithub extends DocsBaseGithub {
      * @private
      */
     processPage(model, page, languages) {
-        return vow.allResolved(languages.map((language, index) => {
+        return vow.allResolved(languages.map((language) => {
             var repoInfo = this.getCriteria(page, language);
 
             // Проверяем на наличие правильного поля contentFile

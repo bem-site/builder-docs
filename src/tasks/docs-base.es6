@@ -26,12 +26,15 @@ export default class DocsBase extends builderCore.tasks.Base {
 
     /**
      * Returns criteria function base on page object and language
+     * This method shouldn't be called directly
+     * It should be override in child classes of DocsBase class
      * @param {Object} page - page model object
      * @param {String} lang - language
      * @returns {Object|false}
      * @private
      */
     getCriteria(page, lang) {
+        this.logger.verbose(lang);
         return false;
     }
 
@@ -54,6 +57,8 @@ export default class DocsBase extends builderCore.tasks.Base {
 
     /**
      * Process single page for all page language version
+     * This method shouldn't be called directly
+     * It should be override in child classes of DocsBase class
      * @param {Model} model - data model
      * @param {Object} page - page model object
      * @param {Array} languages - array of languages
@@ -61,6 +66,7 @@ export default class DocsBase extends builderCore.tasks.Base {
      * @private
      */
     processPage(model, page, languages) {
+        this.logger.verbose(languages);
         return Promise.resolve(page);
     }
 
