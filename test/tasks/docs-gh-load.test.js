@@ -27,7 +27,12 @@ describe('DocsLoadGh', function () {
             ].join('')
 
             config = new Config('debug');
-            task = new DocsLoadGh(config, { token: token });
+            task = new DocsLoadGh(config, {
+                token: token,
+                updateDate: true,
+                hasIssues: true,
+                getBranch: true
+            });
         });
 
         describe('_getContentFromGh', function () {
@@ -53,6 +58,86 @@ describe('DocsLoadGh', function () {
                     path: 'method/index/invalid-path'
                 }, null).catch(function (error) {
                     error.should.be.ok;
+                    done();
+                });
+            });
+        });
+
+        describe('_getUpdateDateInfo', function () {
+            it('should get valid date of last file commit', function (done) {
+                task._getUpdateDateInfo({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method',
+                    ref:  'bem-info-data',
+                    path: 'method/index/index.en.md'
+                }, null).then(function (result) {
+                    result.should.be.instanceOf(Number);
+                    result.should.be.lessThan(+(new Date()));
+                    done();
+                });
+            });
+
+            it('should return rejected promise in case of invalid repo info', function (done) {
+                task._getUpdateDateInfo({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method',
+                    ref:  'bem-info-data',
+                    path: 'method/index/invalid-path'
+                }, null).catch(function (error) {
+                    error.should.be.ok;
+                    done();
+                });
+            });
+        });
+
+        describe('_getIssuesInfo', function () {
+            it('should get valid has_issues repo option value', function (done) {
+                task._getIssuesInfo({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method'
+                }, null).then(function (result) {
+                    result.should.equal(true);
+                    done();
+                });
+            });
+
+            it('should return rejected promise in case of invalid repo info', function (done) {
+                task._getIssuesInfo({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method-invalid-path'
+                }, null).catch(function (error) {
+                    error.should.be.ok;
+                    done();
+                });
+            });
+        });
+
+        describe('_getBranch', function () {
+            it('should get valid date of last file commit', function (done) {
+                task._getBranch({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method',
+                    ref:  'bem-info-data',
+                    path: 'method/index/index.en.md'
+                }, null).then(function (result) {
+                    result.should.equal('bem-info-data');
+                    done();
+                });
+            });
+
+            it('should return default branch name', function (done) {
+                task._getBranch({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method',
+                    ref:  'invalid-ref'
+                }, null).then(function (result) {
+                    result.should.equal('bem-info-data');
                     done();
                 });
             });

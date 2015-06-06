@@ -23,7 +23,7 @@ export default class DocsLoadGithub extends DocsBaseGithub {
      * @returns {Promise}
      * @private
      */
-    _getContentFromGh(repoInfo, headers){
+    _getContentFromGh(repoInfo, headers) {
         return new Promise((resolve, reject) => {
             this.getAPI().getContent(repoInfo, headers, (error, result) => {
                 if (error) {
@@ -38,6 +38,108 @@ export default class DocsLoadGithub extends DocsBaseGithub {
                     return reject(error);
                 }
                 resolve(result);
+            });
+        });
+    }
+
+    /**
+     * Returns date of last commit for given url
+     * @param {Object} repoInfo - gh file object path settings
+     * @param {Object} headers - gh api headers
+     * @returns {Promise}
+     * @private
+     */
+    _getUpdateDateInfo(repoInfo, headers) {
+        if (!this.getTaskConfig().updateDate) {
+            return vow.resolve(null);
+        }
+
+        return new vow.Promise((resolve, reject) => {
+            this.api.getCommits(repoInfo, headers, (error, result) => {
+                if (error || !result || !result[0]) {
+                    this.logger
+                        .error('GH: %s', error ? error.message : 'unknown error')
+                        .error('Error occur while get commits from:')
+                        .error('host: => %s', repoInfo.host)
+                        .error('user: => %s', repoInfo.user)
+                        .error('repo: => %s', repoInfo.repo)
+                        .error('ref:  => %s', repoInfo.ref)
+                        .error('path: => %s', repoInfo.path);
+                    return reject(error || new Error('Error'));
+                }
+                resolve((new Date(result[0].commit.committer.date)).getTime());
+            });
+        });
+    }
+
+    /**
+     * Returns true if current repository has issues section. Otherwise returns false
+     * @param {Object} repoInfo - gh file object path settings
+     * @param {Object} headers - gh api headers
+     * @returns {Promise}
+     * @private
+     */
+    _getIssuesInfo(repoInfo, headers) {
+        if (!this.getTaskConfig().hasIssues) {
+            return vow.resolve(null);
+        }
+
+        return new vow.Promise((resolve, reject) => {
+            this.api.hasIssues(repoInfo, headers, (error, result) => {
+                if (error) {
+                    this.logger
+                        .error('GH: %s', error.message)
+                        .error('Error occur while get issues repo information:')
+                        .error('host: => %s', repoInfo.host)
+                        .error('user: => %s', repoInfo.user)
+                        .error('repo: => %s', repoInfo.repo);
+                    return reject(error);
+                }
+                resolve(result);
+            });
+        });
+    }
+
+    /**
+     * Returns name of branch file loaded from or default repository branch
+     * (if source ref is tag - not branch)
+     * @param {Object} repoInfo - gh file object path settings
+     * @param {Object} headers - gh api headers
+     * @returns {Promise}
+     * @private
+     */
+    _getBranch(repoInfo, headers) {
+        if (!this.getTaskConfig().getBranch) {
+            return vow.resolve(null);
+        }
+
+        return new vow.Promise((resolve, reject) => {
+            this.api.isBranchExists(repoInfo, headers, (error1, result1) => {
+                if (error1) {
+                    this.logger
+                        .error('GH: %s', error1.message)
+                        .error('Error occur while get branch information:')
+                        .error('host: => %s', repoInfo.host)
+                        .error('user: => %s', repoInfo.user)
+                        .error('repo: => %s', repoInfo.repo);
+                    return reject(error1);
+                }
+                if (result1) {
+                    return resolve(repoInfo.ref);
+                } else {
+                    this.api.getDefaultBranch(repoInfo, headers, (error2, result2) => {
+                        if (error2) {
+                            this.logger
+                                .error('GH: %s', error2.message)
+                                .error('Error occur while get default branch name:')
+                                .error('host: => %s', repoInfo.host)
+                                .error('user: => %s', repoInfo.user)
+                                .error('repo: => %s', repoInfo.repo);
+                            return reject(error2);
+                        }
+                        resolve(result2);
+                    });
+                }
             });
         });
     }
@@ -60,7 +162,6 @@ export default class DocsLoadGithub extends DocsBaseGithub {
             if (!repoInfo) {
                 return vow.resolve();
             }
-
 
             // сначала нужно проверить информацию в кеше
             // там есть etag и sha загруженного файла
@@ -107,11 +208,33 @@ export default class DocsLoadGithub extends DocsBaseGithub {
 
                             cache.fileName = fileName;
 
-                            // записываем файл мета-данных и файл с контентом в кеш
-                            return vow.all([
-                                this.writeFileToCache(path.join(page.url, language + '.json'), JSON.stringify(cache, null, 4)),
-                                this.writeFileToCache(filePath, content)
-                            ]).then(() => {
+                            return vow.allResolved([
+                                this._getUpdateDateInfo(repoInfo, this.getHeadersByCache(cache)),
+                                this._getIssuesInfo(repoInfo, this.getHeadersByCache(cache)),
+                                this._getBranch(repoInfo, this.getHeadersByCache(cache))
+                            ]).spread((updateDate, hasIssues, branch) => {
+                                updateDate = updateDate.isResolved() ? updateDate.valueOf() : null;
+                                hasIssues = hasIssues.isResolved() ? hasIssues.valueOf() : null;
+                                branch = branch.isResolved() ? branch.valueOf() : null;
+
+                                if (updateDate) {
+                                    page[language].updateDate = updateDate;
+                                }
+
+                                if (hasIssues) {
+                                    page[language].hasIssues = hasIssues;
+                                }
+
+                                if (branch) {
+                                    page[language].branch = branch;
+                                }
+
+                                // записываем файл мета-данных и файл с контентом в кеш
+                                return vow.all([
+                                    this.writeFileToCache(path.join(page.url, language + '.json'), JSON.stringify(cache, null, 4)),
+                                    this.writeFileToCache(filePath, content)
+                                ]);
+                            }).then(() => {
                                 return filePath;
                             });
                         })

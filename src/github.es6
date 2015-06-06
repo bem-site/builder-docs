@@ -60,6 +60,7 @@ class Base {
      * @returns {*|Object}
      */
     getBranch(options, headers, callback) {
+        options.branch = options.branch || options.ref;
         return this.executeAPIMethod('getBranch', options, headers, callback);
     }
 
@@ -104,6 +105,12 @@ class Custom extends Base {
     getDefaultBranch(options, headers, callback) {
         return this.getRepo(options, headers, (error, result) => {
             return error ? callback(error) : callback(null, result['default_branch']);
+        });
+    }
+
+    hasIssues(options, headers, callback) {
+        return this.getRepo(options, headers, (error, result) => {
+            return error ? callback(error) : callback(null, result['has_issues']);
         });
     }
 
@@ -204,6 +211,10 @@ export default class Github extends Custom {
 
     getDefaultBranch(options, headers, callback) {
         return super.getDefaultBranch.apply(this._getApiByHost(options), arguments);
+    }
+
+    hasIssues(options, headers, callback) {
+        return super.hasIssues.apply(this._getApiByHost(options), arguments);
     }
 
     isBranchExists(options, headers, callback) {
