@@ -3,7 +3,7 @@ var fs = require('fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
-    DocsLoadFile = require('../../lib/tasks/docs-load-file');
+    DocsLoadFile = require('../../lib/tasks/docs-file-load');
 
 describe('DocsLoadFile', function () {
     it('should return valid task name', function () {

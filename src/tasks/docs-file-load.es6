@@ -3,7 +3,7 @@ import path from 'path';
 import vow from 'vow';
 import DocsBase from './docs-base';
 
-export default class DocsLoadFile extends DocsBase {
+export default class DocsFileLoad extends DocsBase {
 
     static getLoggerName() {
         return module;
