@@ -2,7 +2,7 @@
 Plugin for bs-builder system which contains set of tasks for loading page source files
 from different sources (github, filesystem, e.t.c) and tasks for converting content of files to html.
 
-[![NPM version](http://img.shields.io/npm/v/builder-docs.svg?style=flat)](http://www.npmjs.org/package/builder-docs)
+[![NPM version](http://img.shields.io/npm/v/bs-builder-docs.svg?style=flat)](http://www.npmjs.org/package/bs-builder-docs)
 [![Coveralls branch](https://img.shields.io/coveralls/bem-site/builder-docs/master.svg)](https://coveralls.io/r/bem-site/builder-docs?branch=master)
 [![Travis](https://img.shields.io/travis/bem-site/builder-docs.svg)](https://travis-ci.org/bem-site/builder-docs)
 [![David](https://img.shields.io/david/bem-site/builder-docs.svg)](https://david-dm.org/bem-site/builder-docs)
