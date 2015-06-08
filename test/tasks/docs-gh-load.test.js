@@ -187,6 +187,18 @@ describe('DocsLoadGh', function () {
                 });
             });
 
+            it('should return rejected error in case of invalid repository info', function () {
+                task._getBranch({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method'
+                }, null).then(function (error) {
+                    error.code.should.equal(400);
+                    error.message.should.equal('Bad request');
+                    done();
+                });
+            });
+
             it('should return default branch name', function (done) {
                 task._getBranch({
                     host: 'github.com',
@@ -279,6 +291,57 @@ describe('DocsLoadGh', function () {
                     model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(1);
                     should.deepEqual(model.getChanges().pages.modified,
                         [{ type: 'doc', url: '/url1', title: 'foo bar' }]);
+                    done();
+                });
+            });
+        });
+
+        describe('processPage without meta options', function () {
+            var model,
+                languages = ['en', 'ru'],
+                page = {
+                    url: '/url1',
+                    en: {
+                        title: 'foo bar',
+                        sourceUrl: 'https://github.com/bem/bem-method/tree/bem-info-data/method/index/index.en.md'
+                    },
+                    ru: {}
+                },
+                task1;
+
+            before(function () {
+                task1 = new DocsLoadGh(config, {
+                    token: token,
+                    updateDate: false,
+                    hasIssues: false,
+                    getBranch: false
+                });
+                mockFs({
+                    '.builder': {
+                        cache: {
+                            url1: {}
+                        }
+                    }
+                });
+            });
+
+            beforeEach(function () {
+                model = new Model();
+            });
+
+            after(function () {
+                mockFs.restore();
+            });
+
+            it('should load file from gh and place it to cache at first time', function (done) {
+                task1.processPage(model, page, languages).then(function () {
+                    model.getChanges().pages.added.should.be.instanceOf(Array).and.have.length(1);
+                    model.getChanges().pages.modified.should.be.instanceOf(Array).and.have.length(0);
+                    should.deepEqual(model.getChanges().pages.added,
+                        [{ type: 'doc', url: '/url1', title: 'foo bar' }]);
+                    page['en'].contentFile.should.equal('/url1/en.md');
+                    fs.existsSync('.builder/cache/url1/en.json').should.equal(true);
+                    fs.existsSync('.builder/cache/url1/en.md').should.equal(true);
                     done();
                 });
             });
