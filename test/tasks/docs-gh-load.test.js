@@ -18,10 +18,11 @@ describe('DocsLoadGh', function () {
 
     describe('instance methods', function () {
         var config,
+            token,
             task;
 
         before(function () {
-            var token = [
+            token = [
                 '92c5', 'a62f', '7ae4', '4c16', '40ed',
                 '1195', 'd448', '4689', '669c', '5caa'
             ].join('')
@@ -64,6 +65,26 @@ describe('DocsLoadGh', function () {
         });
 
         describe('_getUpdateDateInfo', function () {
+            it ('should return resolved promise with null value for disable option', function (done) {
+                var task1 = new DocsLoadGh(config, {
+                    token: token,
+                    updateDate: false,
+                    hasIssues: true,
+                    getBranch: true
+                });
+
+                task1._getUpdateDateInfo({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method',
+                    ref:  'bem-info-data',
+                    path: 'method/index/index.en.md'
+                }, null).then(function (result) {
+                    should(result).equal(null);
+                    done();
+                });
+            });
+
             it('should get valid date of last file commit', function (done) {
                 task._getUpdateDateInfo({
                     host: 'github.com',
@@ -93,6 +114,24 @@ describe('DocsLoadGh', function () {
         });
 
         describe('_getIssuesInfo', function () {
+            it ('should return resolved promise with null value for disable option', function (done) {
+                var task1 = new DocsLoadGh(config, {
+                    token: token,
+                    updateDate: true,
+                    hasIssues: false,
+                    getBranch: true
+                });
+
+                task1._getIssuesInfo({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method'
+                }, null).then(function (result) {
+                    should(result).equal(null);
+                    done();
+                });
+            });
+
             it('should get valid has_issues repo option value', function (done) {
                 task._getIssuesInfo({
                     host: 'github.com',
@@ -117,7 +156,25 @@ describe('DocsLoadGh', function () {
         });
 
         describe('_getBranch', function () {
-            it('should get valid date of last file commit', function (done) {
+            it ('should return resolved promise with null value for disable option', function (done) {
+                var task1 = new DocsLoadGh(config, {
+                    token: token,
+                    updateDate: true,
+                    hasIssues: true,
+                    getBranch: false
+                });
+
+                task1._getBranch({
+                    host: 'github.com',
+                    user: 'bem',
+                    repo: 'bem-method'
+                }, null).then(function (result) {
+                    should(result).equal(null);
+                    done();
+                });
+            });
+
+            it('should valid branch name', function (done) {
                 task._getBranch({
                     host: 'github.com',
                     user: 'bem',
