@@ -28,13 +28,13 @@ export default class DocsLoadGithub extends DocsBaseGithub {
             this.getAPI().getContent(repoInfo, headers, (error, result) => {
                 if (error) {
                     this.logger
-                        .error('GH: %s', error.message)
-                        .error('Error occur while loading content from:')
-                        .error('host: => %s', repoInfo.host)
-                        .error('user: => %s', repoInfo.user)
-                        .error('repo: => %s', repoInfo.repo)
-                        .error('ref:  => %s', repoInfo.ref)
-                        .error('path: => %s', repoInfo.path);
+                        .error(`GH: ${error.message}`)
+                        .error(`Error occur while loading content from:`)
+                        .error(`host: => ${repoInfo.host}`)
+                        .error(`user: => ${repoInfo.user}`)
+                        .error(`repo: => ${repoInfo.repo}`)
+                        .error(`ref:  => ${repoInfo.ref}`)
+                        .error(`path: => ${repoInfo.path}`);
                     return reject(error);
                 }
                 resolve(result);
@@ -50,21 +50,31 @@ export default class DocsLoadGithub extends DocsBaseGithub {
      * @private
      */
     _getUpdateDateInfo(repoInfo, headers) {
+        /*
+        проверка на то что соответствующая опция задачи сборки включена
+        в противном случае возвращаем промис с null
+        */
         if (!this.getTaskConfig().updateDate) {
             return vow.resolve(null);
         }
 
+        /*
+        Необходимо получить список коммитов для данного файла
+        эти коммиты отсортированы в обратном порядке по выполнению
+        следовательно 0-й элемент будет последним коммитом
+        в соответствующем поле находится дата этого коммита
+         */
         return new vow.Promise((resolve, reject) => {
             this.api.getCommits(repoInfo, headers, (error, result) => {
                 if (error || !result || !result[0]) {
                     this.logger
                         .error('GH: %s', error ? error.message : 'unknown error')
-                        .error('Error occur while get commits from:')
-                        .error('host: => %s', repoInfo.host)
-                        .error('user: => %s', repoInfo.user)
-                        .error('repo: => %s', repoInfo.repo)
-                        .error('ref:  => %s', repoInfo.ref)
-                        .error('path: => %s', repoInfo.path);
+                        .error(`Error occur while get commits from:`)
+                        .error(`host: => ${repoInfo.host}`)
+                        .error(`user: => ${repoInfo.user}`)
+                        .error(`repo: => ${repoInfo.repo}`)
+                        .error(`ref:  => ${repoInfo.ref}`)
+                        .error(`path: => ${repoInfo.path}`);
                     return reject(error || new Error('Error'));
                 }
                 resolve((new Date(result[0].commit.committer.date)).getTime());
@@ -80,19 +90,24 @@ export default class DocsLoadGithub extends DocsBaseGithub {
      * @private
      */
     _getIssuesInfo(repoInfo, headers) {
+        /*
+         проверка на то что соответствующая опция задачи сборки включена
+         в противном случае возвращаем промис с null
+         */
         if (!this.getTaskConfig().hasIssues) {
             return vow.resolve(null);
         }
 
+        /*Здесь разрезолвленный промис содержит логическое значение true|false*/
         return new vow.Promise((resolve, reject) => {
             this.api.hasIssues(repoInfo, headers, (error, result) => {
                 if (error) {
                     this.logger
-                        .error('GH: %s', error.message)
-                        .error('Error occur while get issues repo information:')
-                        .error('host: => %s', repoInfo.host)
-                        .error('user: => %s', repoInfo.user)
-                        .error('repo: => %s', repoInfo.repo);
+                        .error(`GH: ${error.message}`)
+                        .error(`Error occur while get issues repo information:`)
+                        .error(`host: => ${repoInfo.host}`)
+                        .error(`user: => ${repoInfo.user}`)
+                        .error(`repo: => ${repoInfo.repo}`);
                     return reject(error);
                 }
                 resolve(result);
@@ -109,19 +124,27 @@ export default class DocsLoadGithub extends DocsBaseGithub {
      * @private
      */
     _getBranch(repoInfo, headers) {
+        /*
+         проверка на то что соответствующая опция задачи сборки включена
+         в противном случае возвращаем промис с null
+         */
         if (!this.getTaskConfig().getBranch) {
             return vow.resolve(null);
         }
 
+        /*
+        Сначала происходит попытка найти ветку по ее имени. Если такая ветка не
+        найдена, то возвращается название основной ветки репозитория
+         */
         return new vow.Promise((resolve, reject) => {
             this.api.isBranchExists(repoInfo, headers, (error1, result1) => {
                 if (error1) {
                     this.logger
-                        .error('GH: %s', error1.message)
-                        .error('Error occur while get branch information:')
-                        .error('host: => %s', repoInfo.host)
-                        .error('user: => %s', repoInfo.user)
-                        .error('repo: => %s', repoInfo.repo);
+                        .error(`GH: ${error1.message}`)
+                        .error(`Error occur while get branch information:`)
+                        .error(`host: => ${repoInfo.host}`)
+                        .error(`user: => ${repoInfo.user}`)
+                        .error(`repo: => ${repoInfo.repo}`);
                     return reject(error1);
                 }
                 if (result1) {
@@ -130,11 +153,11 @@ export default class DocsLoadGithub extends DocsBaseGithub {
                     this.api.getDefaultBranch(repoInfo, headers, (error2, result2) => {
                         if (error2) {
                             this.logger
-                                .error('GH: %s', error2.message)
-                                .error('Error occur while get default branch name:')
-                                .error('host: => %s', repoInfo.host)
-                                .error('user: => %s', repoInfo.user)
-                                .error('repo: => %s', repoInfo.repo);
+                                .error(`GH: ${error2.message}`)
+                                .error(`Error occur while get default branch name:`)
+                                .error(`host: => ${repoInfo.host}`)
+                                .error(`user: => ${repoInfo.user}`)
+                                .error(`repo: => ${repoInfo.repo}`);
                             return reject(error2);
                         }
                         resolve(result2);
@@ -208,6 +231,13 @@ export default class DocsLoadGithub extends DocsBaseGithub {
 
                             cache.fileName = fileName;
 
+                            /*
+                            Дополнительно загружается некоторая мета-информация
+                            1. Дата обновления документа как дата последнего коммита
+                            2. Инфо о том имеет ли данный репозиторий раздел issues или нет
+                            3. Ветку из которой был загружен документ. Если загрузка была
+                            произведена из тега - то ссылку на основную ветку репозитория
+                            */
                             return vow.allResolved([
                                 this._getUpdateDateInfo(repoInfo, this.getHeadersByCache(cache)),
                                 this._getIssuesInfo(repoInfo, this.getHeadersByCache(cache)),
