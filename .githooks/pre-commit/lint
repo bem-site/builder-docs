@@ -21,8 +21,9 @@ trap cleanup EXIT SIGINT SIGHUP
 git diff --no-prefix > "$PATCH_FILE"
 git checkout -- .
 
-git_cached_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -e '\.js$' --color=never | xargs echo)
+git_cached_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -e '\.es6$' --color=never | xargs echo)
 if [ "$git_cached_files" ]; then
     $NPM_BIN/jshint $git_cached_files || exit 1
+    $NPM_BIN/eslint $git_cached_files || exit 1
     $NPM_BIN/jscs -c .jscs.js $git_cached_files || exit 1
 fi
