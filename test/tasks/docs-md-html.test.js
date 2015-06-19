@@ -1,6 +1,5 @@
 var fs = require('fs'),
     fsExtra = require('fs-extra'),
-    // mockFs = require('mock-fs'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
     DocsMdHtml = require('../../lib/tasks/docs-md-html');
@@ -24,20 +23,9 @@ describe('DocsMdHtml', function () {
 
             fsExtra.ensureDirSync('./.builder/cache/url1');
             fs.writeFileSync('./.builder/cache/url1/en.md', 'Hello World', { encoding: 'utf-8' });
-
-            // mockFs({
-            //    '.builder': {
-            //        cache: {
-            //            url1: {
-            //                'en.md': 'Hello World'
-            //            }
-            //        }
-            //    }
-            // });
         });
 
         afterEach(function () {
-            // mockFs.restore();
             fsExtra.deleteSync('./.builder');
         });
 

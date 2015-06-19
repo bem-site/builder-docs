@@ -39,7 +39,6 @@
     "jshint": "^2.8.0",
     "mocha": "^2.2.5",
     "mocha-lcov-reporter": "0.0.x",
-    "mock-fs": "^2.6.0",
     "should": "^6.0.3"
   },
   "scripts": {
