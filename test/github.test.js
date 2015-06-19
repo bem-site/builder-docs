@@ -12,7 +12,7 @@ describe('api/github', function () {
 
     describe('initialization', function () {
         it('without tokens', function () {
-            new Github({});
+            return new Github({});
         });
     });
 

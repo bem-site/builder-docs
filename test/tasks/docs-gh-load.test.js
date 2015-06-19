@@ -3,7 +3,6 @@ var fs = require('fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
-    Github = require('../../lib/github'),
     DocsLoadGh = require('../../lib/tasks/docs-gh-load');
 
 describe('DocsLoadGh', function () {
@@ -25,7 +24,7 @@ describe('DocsLoadGh', function () {
             token = [
                 '92c5', 'a62f', '7ae4', '4c16', '40ed',
                 '1195', 'd448', '4689', '669c', '5caa'
-            ].join('')
+            ].join('');
 
             config = new Config('debug');
             task = new DocsLoadGh(config, {
@@ -188,14 +187,13 @@ describe('DocsLoadGh', function () {
             });
 
             it('should return rejected error in case of invalid repository info', function () {
-                task._getBranch({
+                return task._getBranch({
                     host: 'github.com',
                     user: 'bem',
                     repo: 'bem-method'
-                }, null).then(function (error) {
-                    error.code.should.equal(400);
-                    error.message.should.equal('Bad request');
-                    done();
+                }, null).catch(function (error) {
+                    error.code.should.equal('400');
+                    error.message.should.equal('Empty value for parameter \'branch\': undefined');
                 });
             });
 

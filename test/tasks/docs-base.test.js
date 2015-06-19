@@ -1,5 +1,4 @@
-var fs = require('fs'),
-    vow = require('vow'),
+var vow = require('vow'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
@@ -36,7 +35,7 @@ describe('DocsBase', function () {
             });
         });
 
-        describe('processPage', function (done) {
+        describe('processPage', function () {
             it('should return resolved promise with page', function (done) {
                 var model = new Model(),
                     page = { url: '/url1' };
@@ -62,7 +61,7 @@ describe('DocsBase', function () {
 
                 model.setPages(pages);
                 task.getCriteria = function (page, language) {
-                    return page[language].field % 2 == 0;
+                    return page[language].field % 2 === 0;
                 };
 
                 task.processPage = function (model, page) {

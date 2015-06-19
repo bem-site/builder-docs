@@ -108,6 +108,15 @@ class Custom extends Base {
         });
     }
 
+    /**
+     * Checks if given repository has issues section or not
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     hasIssues(options, headers, callback) {
         return this.getRepo(options, headers, (error, result) => {
             return error ? callback(error) : callback(null, result['has_issues']);
@@ -193,31 +202,101 @@ export default class Github extends Custom {
         return this.apis.get(type);
     }
 
+    /**
+     * Loads content of file from github via github API
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     *    - ref {String} name of branch
+     *    - path {String} relative path from the root of repository
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
+    /* jshint ignore:start */
     getContent(options, headers, callback) {
         return super.getContent.apply(this._getApiByHost(options), arguments);
     }
 
+    /**
+     * Returns list of commits of given file
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     *    - path {String} relative path from the root of repository
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     getCommits(options, headers, callback) {
         return super.getCommits.apply(this._getApiByHost(options), arguments);
     }
 
+    /**
+     * Returns branch information by given branch name
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     *    - ref {String} name of branch
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     getBranch(options, headers, callback) {
         return super.getBranch.apply(this._getApiByHost(options), arguments);
     }
 
+    /**
+     * Returns repository information
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     getRepo(options, headers, callback) {
         return super.getRepo.apply(this._getApiByHost(options), arguments);
     }
 
+    /**
+     * Returns name of default branch
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     getDefaultBranch(options, headers, callback) {
         return super.getDefaultBranch.apply(this._getApiByHost(options), arguments);
     }
 
+    /**
+     * Checks if given repository has issues section or not
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     hasIssues(options, headers, callback) {
         return super.hasIssues.apply(this._getApiByHost(options), arguments);
     }
 
+    /**
+     * Check if given branch exists in repository
+     * @param {Object} options for api request. Fields:
+     *    - user {String} name of user or organization which this repository is belong to
+     *    - repo {String} name of repository
+     *    - ref {String} name of branch
+     * @param {Object} headers - optional header params
+     * @param {Function} callback function
+     * @returns {*|Object}
+     */
     isBranchExists(options, headers, callback) {
         return super.isBranchExists.apply(this._getApiByHost(options), arguments);
     }
+    /* jshint ignore:end */
 }

@@ -1,7 +1,5 @@
-var fs = require('fs'),
-    should = require('should'),
+var should = require('should'),
     Config = require('bs-builder-core/lib/config'),
-    Model = require('bs-builder-core/lib/model/model'),
     Github = require('../../lib/github'),
     DocsBaseGh = require('../../lib/tasks/docs-gh-base');
 
@@ -23,7 +21,7 @@ describe('DocsBaseGh', function () {
             var token = [
                 '92c5', 'a62f', '7ae4', '4c16', '40ed',
                 '1195', 'd448', '4689', '669c', '5caa'
-            ].join('')
+            ].join('');
 
             config = new Config('debug');
             task = new DocsBaseGh(config, { token: token });
