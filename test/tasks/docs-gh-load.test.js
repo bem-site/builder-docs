@@ -1,5 +1,6 @@
 var fs = require('fs'),
-    mockFs = require('mock-fs'),
+    fsExtra = require('fs-extra'),
+    // mockFs = require('mock-fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
@@ -223,13 +224,14 @@ describe('DocsLoadGh', function () {
                 };
 
             before(function () {
-                mockFs({
-                    '.builder': {
-                        cache: {
-                            url1: {}
-                        }
-                    }
-                });
+                fsExtra.ensureDirSync('./.builder/cache/url1');
+                // mockFs({
+                //    '.builder': {
+                //        cache: {
+                //            url1: {}
+                //        }
+                //    }
+                // });
             });
 
             beforeEach(function () {
@@ -237,7 +239,8 @@ describe('DocsLoadGh', function () {
             });
 
             after(function () {
-                mockFs.restore();
+                fsExtra.deleteSync('./.builder');
+                // mockFs.restore();
             });
 
             it('should load file from gh and place it to cache at first time', function (done) {
@@ -314,13 +317,14 @@ describe('DocsLoadGh', function () {
                     hasIssues: false,
                     getBranch: false
                 });
-                mockFs({
-                    '.builder': {
-                        cache: {
-                            url1: {}
-                        }
-                    }
-                });
+                fsExtra.ensureDirSync('./.builder/cache/url1');
+                // mockFs({
+                //    '.builder': {
+                //        cache: {
+                //            url1: {}
+                //        }
+                //    }
+                // });
             });
 
             beforeEach(function () {
@@ -328,7 +332,8 @@ describe('DocsLoadGh', function () {
             });
 
             after(function () {
-                mockFs.restore();
+                fsExtra.deleteSync('./.builder');
+                // mockFs.restore();
             });
 
             it('should load file from gh and place it to cache at first time', function (done) {
@@ -338,8 +343,8 @@ describe('DocsLoadGh', function () {
                     should.deepEqual(model.getChanges().pages.added,
                         [{ type: 'doc', url: '/url1', title: 'foo bar' }]);
                     page['en'].contentFile.should.equal('/url1/en.md');
-                    fs.existsSync('.builder/cache/url1/en.json').should.equal(true);
-                    fs.existsSync('.builder/cache/url1/en.md').should.equal(true);
+                    fs.existsSync('./.builder/cache/url1/en.json').should.equal(true);
+                    fs.existsSync('./.builder/cache/url1/en.md').should.equal(true);
                     done();
                 });
             });

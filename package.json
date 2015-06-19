@@ -23,24 +23,24 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
-    "babel-runtime": "5.5.4",
-    "bem-md-renderer": "0.2.0",
-    "bem-site-logger": "0.0.5",
-    "bs-builder-core": "0.0.3",
-    "fs-extra": "0.18.0",
-    "github": "0.2.4",
-    "lodash": "3.9.3",
-    "vow": "0.4.9"
+    "babel-runtime": "^5.5.4",
+    "bem-md-renderer": "^0.2.0",
+    "bem-site-logger": "^0.0.5",
+    "bs-builder-core": "^0.0.3",
+    "fs-extra": "^0.18.0",
+    "github": "^0.2.4",
+    "lodash": "^3.9.3",
+    "vow": "^0.4.9"
   },
   "devDependencies": {
-    "babel": "5.5.4",
-    "istanbul": "0.3.13",
-    "jscs": "1.13.0",
-    "jshint": "2.8.0",
-    "mocha": "2.2.5",
+    "babel": "^5.5.4",
+    "istanbul": "^0.3.13",
+    "jscs": "^1.13.0",
+    "jshint": "^2.8.0",
+    "mocha": "^2.2.5",
     "mocha-lcov-reporter": "0.0.x",
-    "mock-fs": "2.7.1",
-    "should": "6.0.3"
+    "mock-fs": "^2.6.0",
+    "should": "^6.0.3"
   },
   "scripts": {
     "jshint": "node_modules/.bin/jshint --extra-ext .es6  .",

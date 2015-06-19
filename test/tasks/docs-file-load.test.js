@@ -1,5 +1,6 @@
 var fs = require('fs'),
-    mockFs = require('mock-fs'),
+    fsExtra = require('fs-extra'),
+    // mockFs = require('mock-fs'),
     should = require('should'),
     Config = require('bs-builder-core/lib/config'),
     Model = require('bs-builder-core/lib/model/model'),
@@ -21,22 +22,27 @@ describe('DocsLoadFile', function () {
         beforeEach(function () {
             config = new Config('debug');
             task = new DocsLoadFile(config, {});
-            mockFs({
-                '.builder': {
-                    cache: {
-                        url1: {}
-                    }
-                },
-                foo: {
-                    bar: {
-                        'test-file.md': 'Hello World'
-                    }
-                }
-            });
+            fsExtra.ensureDirSync('./.builder/cache/url1');
+            fsExtra.ensureDirSync('./foo/bar');
+            fs.writeFileSync('./foo/bar/test-file.md', 'Hello World', { encoding: 'utf-8' });
+            // mockFs({
+            //    '.builder': {
+            //        cache: {
+            //            url1: {}
+            //        }
+            //    },
+            //    foo: {
+            //        bar: {
+            //            'test-file.md': 'Hello World'
+            //        }
+            //    }
+            // });
         });
 
         afterEach(function () {
-            mockFs.restore();
+            fsExtra.deleteSync('./.builder');
+            fsExtra.deleteSync('./foo');
+            // mockFs.restore();
         });
 
         describe('getCriteria', function () {
