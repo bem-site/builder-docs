@@ -27,7 +27,7 @@
     "bem-md-renderer": "^0.2.0",
     "bem-site-logger": "^0.0.5",
     "bs-builder-core": "^0.0.3",
-    "fs-extra": "^0.18.0",
+    "fs-extra": "^0.20.0",
     "github": "^0.2.4",
     "lodash": "^3.9.3",
     "vow": "^0.4.9"
@@ -39,7 +39,7 @@
     "jshint": "^2.8.0",
     "mocha": "^2.2.5",
     "mocha-lcov-reporter": "0.0.x",
-    "should": "^6.0.3"
+    "should": "^7.0.1"
   },
   "scripts": {
     "jshint": "node_modules/.bin/jshint --extra-ext .es6  .",
