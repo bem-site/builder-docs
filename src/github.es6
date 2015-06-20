@@ -11,13 +11,34 @@ class Base {
     }
 
     executeAPIMethod(method, options, headers, callback) {
-        this.logger.verbose('github API call with options: ');
-        this.logger.verbose(' - host: %s', options.host || 'N/A');
-        this.logger.verbose(' - user: %s', options.user || 'N/A');
-        this.logger.verbose(' - repo: %s', options.repo || 'N/A');
-        this.logger.verbose(' - ref: %s',  options.ref  || 'N/A');
-        this.logger.verbose(' - path: %s', options.path || 'N/A');
-        return this.api['repos'][method](_.extend(headers ? { headers: headers } : {}, options), callback);
+        this.logger
+            .verbose('github API call with options:')
+            .verbose(' - host: %s', options.host || 'N/A')
+            .verbose(' - user: %s', options.user || 'N/A')
+            .verbose(' - repo: %s', options.repo || 'N/A')
+            .verbose(' - ref: %s',  options.ref  || 'N/A')
+            .verbose(' - path: %s', options.path || 'N/A');
+
+        const ATTEMPTS = 5; // максимальное число допустимых повторных обращений к github в случае возникновения ошибки
+        var requestFunc = (count) => {
+            this.logger.verbose(`attempt #${count}`);
+            return this.api['repos'][method](_.extend(headers ? { headers: headers } : {}, options),
+                (error, result) => {
+                    if (!error) {
+                        return callback(null, result);
+                    }
+
+                    // если число попыток не превысило максимально возможное, то повторно запрашиваем данные
+                    if (count < ATTEMPTS) {
+                        return requestFunc(++count);
+                    }
+
+                    // отправляем callback с ошибкой если все попытки завершились с ошибкой
+                    callback(error);
+                });
+        };
+
+        requestFunc(0);
     }
 
     /**
