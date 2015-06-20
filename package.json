@@ -1,6 +1,6 @@
 {
   "name": "bs-builder-docs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Plugin for bs-builder system for loading and parsing pages source files",
   "repository": {
     "type": "git",
