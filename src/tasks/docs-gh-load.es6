@@ -189,7 +189,7 @@ export default class DocsLoadGithub extends DocsBaseGithub {
             // сначала нужно проверить информацию в кеше
             // там есть etag и sha загруженного файла
             this.logger.debug(`Load doc file for language: => ${language} and page with url: => ${page.url}`);
-            return this.readFileFromCache(path.join(page.url, language + '.json'))
+            return this.readFileFromCache(path.join(page.url, language + '.meta.json'))
                 .then(content => {
                     return JSON.parse(content);
                 })
@@ -261,7 +261,7 @@ export default class DocsLoadGithub extends DocsBaseGithub {
 
                                 // записываем файл мета-данных и файл с контентом в кеш
                                 return vow.all([
-                                    this.writeFileToCache(path.join(page.url, language + '.json'), JSON.stringify(cache, null, 4)),
+                                    this.writeFileToCache(path.join(page.url, language + '.meta.json'), JSON.stringify(cache, null, 4)),
                                     this.writeFileToCache(filePath, content)
                                 ]);
                             }).then(() => {

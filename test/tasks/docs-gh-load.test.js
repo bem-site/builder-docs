@@ -241,7 +241,7 @@ describe('DocsLoadGh', function () {
                     should.deepEqual(model.getChanges().pages.added,
                         [{ type: 'doc', url: '/url1', title: 'foo bar' }]);
                     page['en'].contentFile.should.equal('/url1/en.md');
-                    fs.existsSync('.builder/cache/url1/en.json').should.equal(true);
+                    fs.existsSync('.builder/cache/url1/en.meta.json').should.equal(true);
                     fs.existsSync('.builder/cache/url1/en.md').should.equal(true);
                     done();
                 });
@@ -256,7 +256,7 @@ describe('DocsLoadGh', function () {
             });
 
             it('should load cached file if etag was changed but sha sum are equal', function (done) {
-                var p = './.builder/cache/url1/en.json',
+                var p = './.builder/cache/url1/en.meta.json',
                     o = { encoding: 'utf-8' },
                     cache = fs.readFileSync(p, o);
                 cache = JSON.parse(cache);
@@ -271,7 +271,7 @@ describe('DocsLoadGh', function () {
             });
 
             it('should reload file if sha sum was changed', function (done) {
-                var p = './.builder/cache/url1/en.json',
+                var p = './.builder/cache/url1/en.meta.json',
                     o = { encoding: 'utf-8' },
                     cache = fs.readFileSync(p, o);
                 cache = JSON.parse(cache);
@@ -326,7 +326,7 @@ describe('DocsLoadGh', function () {
                     should.deepEqual(model.getChanges().pages.added,
                         [{ type: 'doc', url: '/url1', title: 'foo bar' }]);
                     page['en'].contentFile.should.equal('/url1/en.md');
-                    fs.existsSync('./.builder/cache/url1/en.json').should.equal(true);
+                    fs.existsSync('./.builder/cache/url1/en.meta.json').should.equal(true);
                     fs.existsSync('./.builder/cache/url1/en.md').should.equal(true);
                     done();
                 });
